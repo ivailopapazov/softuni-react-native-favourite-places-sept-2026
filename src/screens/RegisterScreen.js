@@ -1,17 +1,20 @@
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text, Button, Pressable } from 'react-native';
 
 import AuthLayout from '../components/AuthLayout';
 import FormInput from '../components/FormInput';
 import PrimaryButton from '../components/PrimaryButton';
 
-export default function RegisterScreen() {
+export default function RegisterScreen({ navigation }) {
     return (
         <AuthLayout
             title="Create account"
             subtitle="Start saving the places you love"
             footer={
                 <Text style={styles.footerText}>
-                    Already have an account? <Text style={styles.footerLink}>Log In</Text>
+                    Already have an account? 
+                    <Pressable  onPress={() => navigation.navigate('Login')}>
+                        <Text style={styles.footerLink}>Log In</Text>
+                    </Pressable>
                 </Text>
             }
         >

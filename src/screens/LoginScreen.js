@@ -1,9 +1,11 @@
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 
+
 import AuthLayout from '../components/AuthLayout';
 import FormInput from '../components/FormInput';
 import PrimaryButton from '../components/PrimaryButton';
 import { colors } from '../constants/colors';
+import { Link } from '@react-navigation/native';
 
 export default function LoginScreen() {
     return (
@@ -12,7 +14,7 @@ export default function LoginScreen() {
             subtitle="Log in to see your favourite places"
             footer={
                 <Text style={styles.footerText}>
-                    Don't have an account? <Text style={styles.footerLink}>Register</Text>
+                    Don't have an account? <Link style={styles.footerLink} screen="Register">Register</Link>
                 </Text>
             }
         >
