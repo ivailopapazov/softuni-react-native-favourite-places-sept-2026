@@ -2,9 +2,9 @@ import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 import { colors } from '../constants/colors';
 
-export default function PrimaryButton({ title }) {
+export default function PrimaryButton({ title, onPress }) {
     return (
-        <TouchableOpacity style={styles.button} activeOpacity={0.8}>
+        <TouchableOpacity style={styles.button} activeOpacity={0.8} onPress={onPress}>
             <Text style={styles.text}>{title}</Text>
         </TouchableOpacity>
     );

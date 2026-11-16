@@ -1,10 +1,33 @@
 import { StyleSheet, Text, Pressable } from 'react-native';
+import { useState } from 'react';
+import useAuth from '../contexts/auth-context/useAuth';
 
 import AuthLayout from '../components/AuthLayout';
 import FormInput from '../components/FormInput';
 import PrimaryButton from '../components/PrimaryButton';
 
 export default function RegisterScreen({ navigation }) {
+    const { register } = useAuth(); 
+
+    const [values, setValues] = useState({
+        fullName: '',
+        email: '',
+        password: '',
+        confirmPassword: ''
+    }); 
+    
+    const changeHandler = (name, value) => {
+        setValues(state => ({
+            ...state,
+            [name]: value
+        }));
+    };
+
+    const submitHandler = async () => {
+        console.log('submitHandler');
+        await register(values.email, values.password, values.fullName);
+    };
+
     return (
         <AuthLayout
             title="Create account"
@@ -24,6 +47,8 @@ export default function RegisterScreen({ navigation }) {
                 placeholder="Alex Traveler"
                 autoCapitalize="words"
                 autoComplete="name"
+                value={values.fullName}
+                onChangeText={(text) => changeHandler('fullName', text)}
             />
             <FormInput
                 label="Email"
@@ -32,6 +57,8 @@ export default function RegisterScreen({ navigation }) {
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoComplete="email"
+                value={values.email}
+                onChangeText={(text) => changeHandler('email', text)}
             />
             <FormInput
                 label="Password"
@@ -39,6 +66,8 @@ export default function RegisterScreen({ navigation }) {
                 placeholder="At least 6 characters"
                 secureTextEntry
                 autoComplete="new-password"
+                value={values.password}
+                onChangeText={(text) => changeHandler('password', text)}
             />
             <FormInput
                 label="Confirm password"
@@ -46,9 +75,11 @@ export default function RegisterScreen({ navigation }) {
                 placeholder="Repeat your password"
                 secureTextEntry
                 autoComplete="new-password"
+                value={values.confirmPassword}
+                onChangeText={(text) => changeHandler('confirmPassword', text)}
             />
 
-            <PrimaryButton title="Create Account" />
+            <PrimaryButton title="Create Account" onPress={submitHandler} />
         </AuthLayout>
     );
 }
