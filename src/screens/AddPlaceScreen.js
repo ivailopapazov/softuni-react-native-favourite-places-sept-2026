@@ -73,7 +73,7 @@ export default function AddPlaceScreen() {
                         <Text style={styles.locationButtonText}>🧭  Use my current location</Text>
                     </TouchableOpacity>
 
-                    <FormInput label="Date of visit" icon="📅" placeholder="DD.MM.YYYY" value={values.date} onChangeText={(text) => handleChange('date', text)} />
+                    <FormInput type="date" label="Date of visit" icon="📅" placeholder="DD.MM.YYYY" value={values.date} onChangeText={(text) => handleChange('date', text)} />
 
                     <FormInput
                         label="Description"
