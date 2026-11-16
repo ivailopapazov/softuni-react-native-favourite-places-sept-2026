@@ -5,11 +5,15 @@ import StatCard from '../components/StatCard';
 import MenuButton from '../components/MenuButton';
 import PlaceListItem from '../components/PlaceListItem';
 import { colors } from '../constants/colors';
+import useAuth from '../contexts/auth-context/useAuth';
 
 export default function HomeScreen() {
+    const { logout } = useAuth();
+
+
     return (
         <View style={styles.screen}>
-            <UserHeader name="Alex Traveler" email="alex@favplaces.app" />
+            <UserHeader name="Alex Traveler" email="alex@favplaces.app" onLogout={logout} />
 
             <ScrollView
                 style={styles.content}

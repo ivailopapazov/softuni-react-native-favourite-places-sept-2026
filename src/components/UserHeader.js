@@ -2,7 +2,7 @@ import { Platform, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'r
 
 import { colors } from '../constants/colors';
 
-export default function UserHeader({ name, email }) {
+export default function UserHeader({ name, email, onLogout }) {
     const initials = name
         .split(' ')
         .map((part) => part[0])
@@ -23,7 +23,7 @@ export default function UserHeader({ name, email }) {
                     <Text style={styles.email} numberOfLines={1}>{email}</Text>
                 </View>
 
-                <TouchableOpacity style={styles.logoutButton} activeOpacity={0.7}>
+                <TouchableOpacity style={styles.logoutButton} activeOpacity={0.7} onPress={onLogout}>
                     <Text style={styles.logoutIcon}>⎋</Text>
                     <Text style={styles.logoutText}>Logout</Text>
                 </TouchableOpacity>

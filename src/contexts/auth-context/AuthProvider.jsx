@@ -35,10 +35,18 @@ export default function AuthProvider({
         }
     };
 
+    const logout = () => {
+        // Logout from supabase 
+
+        setAuth(null);
+    };
+
     const value = {
         auth,
         register,
         login,
+        logout,
+        isAuthenticated: !!auth 
     }
 
     return (

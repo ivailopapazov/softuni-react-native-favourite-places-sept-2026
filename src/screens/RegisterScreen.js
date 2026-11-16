@@ -26,6 +26,7 @@ export default function RegisterScreen({ navigation }) {
     const submitHandler = async () => {
         console.log('submitHandler');
         await register(values.email, values.password, values.fullName);
+        
     };
 
     return (
