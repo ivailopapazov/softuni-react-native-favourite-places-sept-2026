@@ -12,6 +12,7 @@ import ScreenHeader from '../components/ScreenHeader';
 import FormInput from '../components/FormInput';
 import PrimaryButton from '../components/PrimaryButton';
 import Chip from '../components/Chip';
+import PhotoPicker from '../components/PhotoPicker';
 import { colors } from '../constants/colors';
 import { categories } from '../data/places';
 
@@ -28,12 +29,7 @@ export default function AddPlaceScreen() {
                 keyboardShouldPersistTaps="handled"
                 showsVerticalScrollIndicator={false}
             >
-                {/* Photo picker placeholder */}
-                <TouchableOpacity style={styles.photoPicker} activeOpacity={0.8}>
-                    <Text style={styles.photoIcon}>📷</Text>
-                    <Text style={styles.photoTitle}>Add a photo</Text>
-                    <Text style={styles.photoHint}>Take a picture or choose from gallery</Text>
-                </TouchableOpacity>
+                <PhotoPicker />
 
                 <View style={styles.card}>
                     <FormInput label="Title" icon="🏷️" placeholder="e.g. Seven Rila Lakes" />
@@ -94,31 +90,6 @@ const styles = StyleSheet.create({
     content: {
         padding: 20,
         paddingBottom: 40,
-    },
-    photoPicker: {
-        height: 170,
-        borderRadius: 18,
-        borderWidth: 2,
-        borderStyle: 'dashed',
-        borderColor: colors.primary,
-        backgroundColor: colors.accentSoft,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: 20,
-    },
-    photoIcon: {
-        fontSize: 40,
-        marginBottom: 8,
-    },
-    photoTitle: {
-        fontSize: 16,
-        fontWeight: '700',
-        color: colors.primary,
-    },
-    photoHint: {
-        fontSize: 13,
-        color: colors.textMuted,
-        marginTop: 4,
     },
     card: {
         backgroundColor: colors.surface,
