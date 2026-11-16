@@ -4,11 +4,12 @@ import { getErrorMessage } from "../../utils/error.utils";
 
 import { authApi } from "../../api";
 import AuthContext from "./AuthContext";
+import useSecureState from "../../hooks/useSecureState";
 
 export default function AuthProvider({
     children,
 }) {
-    const [auth, setAuth] = useState(null);
+    const [auth, setAuth] = useSecureState("auth", null);
 
     const register = async (email, password, fullName) => {
         console.log("Registering with email:", email);

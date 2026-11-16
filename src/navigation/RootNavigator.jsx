@@ -4,8 +4,9 @@ import useAuth from '../contexts/auth-context/useAuth';
 import AuthNavigator from './AuthNavigator';
 import HomeNavigator from './HomeNavigator';
 
+const Stack = createStackNavigator();
+
 export default function RootNavigator() {
-    const Stack = createStackNavigator();
     const { isAuthenticated } = useAuth();
     
     return (

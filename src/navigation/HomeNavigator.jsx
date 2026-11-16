@@ -2,8 +2,9 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 import HomeScreen from "../screens/HomeScreen";
 
+const Stack = createStackNavigator();
+
 export default function HomeNavigator() {
-    const Stack = createStackNavigator();
     
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
