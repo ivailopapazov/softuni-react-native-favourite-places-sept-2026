@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Alert } from "react-native";
+import { getErrorMessage } from "../../utils/error.utils";
 
 import { authApi } from "../../api";
 import AuthContext from "./AuthContext";
@@ -18,8 +19,8 @@ export default function AuthProvider({
             
             setAuth(result);
         } catch (error) {
-            console.error("Registration failed:", error);
-            Alert.alert("Registration failed:", error);
+            console.error("Registration failed:", getErrorMessage(error));
+            Alert.alert("Registration failed:", getErrorMessage(error));
         }
     };
 
@@ -29,8 +30,8 @@ export default function AuthProvider({
             console.log("Login successful:", result);
             setAuth(result);
         } catch (error) {
-            console.error("Login failed:", error);
-            Alert.alert("Login failed:", error);
+            console.error("Login failed:", getErrorMessage(error));
+            Alert.alert("Login failed:", getErrorMessage(error));
         }
     };
 
