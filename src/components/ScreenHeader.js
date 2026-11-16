@@ -1,12 +1,15 @@
 import { Platform, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 import { colors } from '../constants/colors';
 
 export default function ScreenHeader({ title, subtitle, rightIcon }) {
+    const navigation = useNavigation();
+    
     return (
         <View style={styles.header}>
             <View style={styles.row}>
-                <TouchableOpacity style={styles.iconButton} activeOpacity={0.7}>
+                <TouchableOpacity style={styles.iconButton} activeOpacity={0.7} onPress={() => navigation.goBack()}>
                     <Text style={styles.backIcon}>‹</Text>
                 </TouchableOpacity>
 

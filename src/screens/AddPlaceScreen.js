@@ -7,6 +7,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import { getErrorMessage } from '../utils/error.utils';
 
 import ScreenHeader from '../components/ScreenHeader';
 import FormInput from '../components/FormInput';
@@ -15,8 +16,39 @@ import Chip from '../components/Chip';
 import PhotoPicker from '../components/PhotoPicker';
 import { colors } from '../constants/colors';
 import { categories } from '../data/places';
+import { useState } from 'react';
+import { placeApi } from '../api';
 
 export default function AddPlaceScreen() {
+    const [values, setValues] = useState({
+        title: '',
+        image_url: '',
+        location: '',
+        date: '',
+        description: '',
+        category: 'City',
+        rating: 0,
+    });
+
+    const handleChange = (name, value) => {
+        setValues((prevValues) => ({
+            ...prevValues,
+            [name]: value,
+        }));
+    };
+
+    const handleSave = async () => {
+        // Implement save logic here, e.g., send data to API or update state
+        console.log(values);
+
+        try {
+            await placeApi.create(values);
+            console.log('Place saved successfully');
+        } catch (error) {
+            console.error('Failed to save place:', getErrorMessage(error));
+        }
+    };
+    
     return (
         <KeyboardAvoidingView
             style={styles.screen}
@@ -32,14 +64,16 @@ export default function AddPlaceScreen() {
                 <PhotoPicker />
 
                 <View style={styles.card}>
-                    <FormInput label="Title" icon="🏷️" placeholder="e.g. Seven Rila Lakes" />
+                    <FormInput label="Title" icon="🏷️" placeholder="e.g. Seven Rila Lakes" value={values.title} onChangeText={(text) => handleChange('title', text)} />
 
-                    <FormInput label="Location" icon="📍" placeholder="City, Country" />
+                    <FormInput label="imageUrl" icon="🖼️" placeholder="Image URL" value={values.image_url} onChangeText={(text) => handleChange('image_url', text)} />
+
+                    <FormInput label="Location" icon="📍" placeholder="City, Country" value={values.location} onChangeText={(text) => handleChange('location', text)} />
                     <TouchableOpacity style={styles.locationButton} activeOpacity={0.7}>
                         <Text style={styles.locationButtonText}>🧭  Use my current location</Text>
                     </TouchableOpacity>
 
-                    <FormInput label="Date of visit" icon="📅" placeholder="DD.MM.YYYY" />
+                    <FormInput label="Date of visit" icon="📅" placeholder="DD.MM.YYYY" value={values.date} onChangeText={(text) => handleChange('date', text)} />
 
                     <FormInput
                         label="Description"
@@ -47,6 +81,8 @@ export default function AddPlaceScreen() {
                         placeholder="What made this place special?"
                         multiline
                         numberOfLines={4}
+                        value={values.description}
+                        onChangeText={(text) => handleChange('description', text)}
                     />
 
                     {/* Category */}
@@ -56,7 +92,7 @@ export default function AddPlaceScreen() {
                             .filter((category) => category !== 'All')
                             .map((category, index) => (
                                 <View key={category} style={styles.chipWrapper}>
-                                    <Chip label={category} active={index === 0} />
+                                    <Chip label={category} active={values.category === category} onPress={() => handleChange('category', category)} />
                                 </View>
                             ))}
                     </View>
@@ -65,13 +101,13 @@ export default function AddPlaceScreen() {
                     <Text style={styles.label}>Your rating</Text>
                     <View style={styles.ratingRow}>
                         {[1, 2, 3, 4, 5].map((star) => (
-                            <TouchableOpacity key={star} activeOpacity={0.7}>
-                                <Text style={[styles.star, star > 4 && styles.starEmpty]}>★</Text>
+                            <TouchableOpacity key={star} activeOpacity={0.7} onPress={() => handleChange('rating', star)}>
+                                <Text style={[styles.star, star > values.rating && styles.starEmpty]}>★</Text>
                             </TouchableOpacity>
                         ))}
                     </View>
 
-                    <PrimaryButton title="Save Place" />
+                    <PrimaryButton title="Save Place" onPress={handleSave} />
 
                     <TouchableOpacity style={styles.cancelButton} activeOpacity={0.7}>
                         <Text style={styles.cancelText}>Cancel</Text>

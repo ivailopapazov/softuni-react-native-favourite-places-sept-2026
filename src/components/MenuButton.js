@@ -2,13 +2,14 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { colors } from '../constants/colors';
 
-export default function MenuButton({ icon, title, subtitle, variant = 'default' }) {
+export default function MenuButton({ icon, title, subtitle, variant = 'default', onPress }) {
     const isPrimary = variant === 'primary';
 
     return (
         <TouchableOpacity
             style={[styles.button, isPrimary && styles.buttonPrimary]}
             activeOpacity={0.8}
+            onPress={onPress}
         >
             <View style={[styles.iconWrapper, isPrimary && styles.iconWrapperPrimary]}>
                 <Text style={styles.icon}>{icon}</Text>

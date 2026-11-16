@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 
 import RatingStars from './RatingStars';
 import { colors } from '../constants/colors';
@@ -8,7 +8,8 @@ export default function PlaceCard({ place }) {
         <TouchableOpacity style={styles.card} activeOpacity={0.85}>
             {/* Image placeholder - a real photo will be used later */}
             <View style={styles.image}>
-                <Text style={styles.imageEmoji}>{place.emoji}</Text>
+                {/* <Text style={styles.imageEmoji}>{place.emoji}</Text> */}
+                <Image source={{ uri: place.image_url }} style={{ width: '100%', height: '100%' }} />
                 <View style={styles.categoryBadge}>
                     <Text style={styles.categoryText}>{place.category}</Text>
                 </View>

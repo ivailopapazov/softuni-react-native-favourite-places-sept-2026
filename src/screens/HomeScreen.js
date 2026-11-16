@@ -7,7 +7,7 @@ import PlaceListItem from '../components/PlaceListItem';
 import { colors } from '../constants/colors';
 import useAuth from '../contexts/auth-context/useAuth';
 
-export default function HomeScreen() {
+export default function HomeScreen({ navigation }) {
     const { logout } = useAuth();
 
 
@@ -44,16 +44,19 @@ export default function HomeScreen() {
                     title="My Places"
                     subtitle="Browse all of your saved places"
                     variant="primary"
+                    onPress={() => navigation.navigate("MyPlaces")}
                 />
                 <MenuButton
                     icon="➕"
                     title="Add New Place"
                     subtitle="Save a place you've just visited"
+                    onPress={() => navigation.navigate("AddPlace")}
                 />
                 <MenuButton
                     icon="📊"
                     title="Statistics"
                     subtitle="See where you've been the most"
+                    onPress={() => navigation.navigate("Statistics")}
                 />
 
                 {/* Recently added */}

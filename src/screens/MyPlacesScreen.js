@@ -1,18 +1,38 @@
 import { FlatList, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useEffect, useState } from 'react';
 
 import ScreenHeader from '../components/ScreenHeader';
 import PlaceCard from '../components/PlaceCard';
 import Chip from '../components/Chip';
 import { colors } from '../constants/colors';
 import { categories, places } from '../data/places';
+import { placeApi } from '../api';
 
-export default function MyPlacesScreen() {
+export default function MyPlacesScreen({
+    navigation,
+}) {
+    const [myPlaces, setMyPlaces] = useState(places);
+
+    useEffect(() => {
+        const fetchPlaces = async () => {
+            try {
+                const data = await placeApi.getAll();
+                setMyPlaces(data);
+            } catch (error) {
+                console.error('Failed to fetch places:', error);
+            }
+        };
+
+        fetchPlaces();
+    }, []);
+
+    
     return (
         <View style={styles.screen}>
-            <ScreenHeader title="My Places" subtitle={`${places.length} saved places`} rightIcon="⇅" />
+            <ScreenHeader title="My Places" subtitle={`${myPlaces.length} saved places`} rightIcon="⇅" />
 
             <FlatList
-                data={places}
+                data={myPlaces}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => <PlaceCard place={item} />}
                 contentContainerStyle={styles.listContent}
@@ -44,7 +64,7 @@ export default function MyPlacesScreen() {
             />
 
             {/* Floating "Add" button */}
-            <TouchableOpacity style={styles.fab} activeOpacity={0.85}>
+            <TouchableOpacity style={styles.fab} activeOpacity={0.85} onPress={() => navigation.navigate('AddPlace')}>
                 <Text style={styles.fabIcon}>+</Text>
             </TouchableOpacity>
         </View>
