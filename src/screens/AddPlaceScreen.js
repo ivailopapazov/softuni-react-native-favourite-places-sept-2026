@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { getErrorMessage } from '../utils/error.utils';
 import * as Location from 'expo-location';
+import { File } from 'expo-file-system';
 
 import ScreenHeader from '../components/ScreenHeader';
 import FormInput from '../components/FormInput';
@@ -25,7 +26,7 @@ import DatePickerFormInput from '../components/DatePickerFormInput';
 export default function AddPlaceScreen() {
     const [values, setValues] = useState({
         title: '',
-        image_url: '',
+        image_url: null,
         location: '',
         date: new Date(),
         description: '',
@@ -60,11 +61,19 @@ export default function AddPlaceScreen() {
     };
 
     const handleSave = async () => {
-        // Implement save logic here, e.g., send data to API or update state
-        console.log(values);
-
         try {
-            await placeApi.create(values);
+            let imageUrl = values.image_url;
+            if (imageUrl) {
+                const file = new File(imageUrl);
+                const fileName = `${values.title}-${Date.now()}.jpg`;
+
+                imageUrl = await placeApi.saveImage(file, fileName);
+            }
+
+            await placeApi.create({
+                ...values,
+                image_url: imageUrl,
+            });
             console.log('Place saved successfully');
         } catch (error) {
             console.error('Failed to save place:', getErrorMessage(error));
@@ -83,12 +92,10 @@ export default function AddPlaceScreen() {
                 keyboardShouldPersistTaps="handled"
                 showsVerticalScrollIndicator={false}
             >
-                <PhotoPicker />
+                <PhotoPicker onChange={(uri) => handleChange('image_url', uri)} uri={values.image_url} />
 
                 <View style={styles.card}>
                     <FormInput label="Title" icon="🏷️" placeholder="e.g. Seven Rila Lakes" value={values.title} onChangeText={(text) => handleChange('title', text)} />
-
-                    <FormInput label="imageUrl" icon="🖼️" placeholder="Image URL" value={values.image_url} onChangeText={(text) => handleChange('image_url', text)} />
 
                     <FormInput label="Location" icon="📍" placeholder="City, Country" value={values.location} onChangeText={(text) => handleChange('location', text)} />
                     <TouchableOpacity style={styles.locationButton} activeOpacity={0.7} onPress={useCurrentLocationHandler}>

@@ -4,9 +4,10 @@ import * as ImagePicker from 'expo-image-picker';
 
 import { colors } from '../constants/colors';
 
-export default function PhotoPicker({ }) {
-    const [imageUri, setImageUri] = useState(null);
-
+export default function PhotoPicker({
+    onChange,
+    uri,
+}) {
     const chooseFromGalleryHandler = async () => {
         // Implement the logic to choose an image from the gallery
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -30,7 +31,7 @@ export default function PhotoPicker({ }) {
             return;
         }
 
-        setImageUri(result.assets[0].uri);
+        onChange(result.assets[0].uri);
     };
 
     const takePhotoHandler = async () => {
@@ -42,6 +43,7 @@ export default function PhotoPicker({ }) {
         }
 
         let result = await ImagePicker.launchCameraAsync({
+            mediaTypes: ['images'],
             allowsEditing: true,
             aspect: [4, 3],
             quality: 1,
@@ -54,13 +56,13 @@ export default function PhotoPicker({ }) {
             return;
         }
 
-        setImageUri(result.assets[0].uri);
-    }
+        onChange(result.assets[0].uri);
+    };
 
-    if (imageUri) {
+    if (uri) {
         return (
             <View style={styles.previewContainer}>
-                <Image source={{ uri: imageUri }} style={styles.preview} />
+                <Image source={{ uri }} style={styles.preview} />
 
                 <View style={styles.previewActions}>
                     <TouchableOpacity
@@ -73,7 +75,7 @@ export default function PhotoPicker({ }) {
                     <TouchableOpacity
                         style={styles.previewButton}
                         activeOpacity={0.8}
-                        onPress={() => setImageUri(null)}
+                        onPress={() => onChange(null)}
                     >
                         <Text style={styles.previewButtonText}>🗑️  Remove</Text>
                     </TouchableOpacity>
