@@ -2,11 +2,16 @@ import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 import { colors } from '../constants/colors';
 
-export default function Chip({ label, active = false }) {
+export default function Chip({
+    label,
+    active = false,
+    onPress,
+}) {
     return (
         <TouchableOpacity
             style={[styles.chip, active && styles.chipActive]}
             activeOpacity={0.8}
+            onPress={onPress}
         >
             <Text style={[styles.label, active && styles.labelActive]}>{label}</Text>
         </TouchableOpacity>

@@ -1,10 +1,61 @@
 import { useState } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 
 import { colors } from '../constants/colors';
 
-export default function PhotoPicker({ onChange }) {
+export default function PhotoPicker({ }) {
     const [imageUri, setImageUri] = useState(null);
+
+    const chooseFromGalleryHandler = async () => {
+        // Implement the logic to choose an image from the gallery
+        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if (permissionResult.granted === false) {
+            Alert.alert("Permission to access gallery is required!");
+            return;
+        }
+
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ['images'],
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        console.log(result);
+
+        if (result.canceled) {
+            // handle cancellation
+            return;
+        }
+
+        setImageUri(result.assets[0].uri);
+    };
+
+    const takePhotoHandler = async () => {
+        const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+
+        if (permissionResult.granted === false) {
+            Alert.alert("Permission to access camera is required!");
+            return;
+        }
+
+        let result = await ImagePicker.launchCameraAsync({
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        console.log(result);
+
+        if (result.canceled) {
+            // handle cancellation
+            return;
+        }
+
+        setImageUri(result.assets[0].uri);
+    }
 
     if (imageUri) {
         return (
@@ -22,6 +73,7 @@ export default function PhotoPicker({ onChange }) {
                     <TouchableOpacity
                         style={styles.previewButton}
                         activeOpacity={0.8}
+                        onPress={() => setImageUri(null)}
                     >
                         <Text style={styles.previewButtonText}>🗑️  Remove</Text>
                     </TouchableOpacity>
@@ -40,12 +92,14 @@ export default function PhotoPicker({ onChange }) {
                 <TouchableOpacity
                     style={styles.actionButton}
                     activeOpacity={0.8}
+                    onPress={takePhotoHandler}
                 >
                     <Text style={styles.actionText}>📸  Camera</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={[styles.actionButton, styles.actionButtonOutline]}
                     activeOpacity={0.8}
+                    onPress={chooseFromGalleryHandler}
                 >
                     <Text style={[styles.actionText, styles.actionTextOutline]}>🖼️  Gallery</Text>
                 </TouchableOpacity>
