@@ -20,13 +20,14 @@ import { colors } from '../constants/colors';
 import { categories } from '../data/places';
 import { useState } from 'react';
 import { placeApi } from '../api';
+import DatePickerFormInput from '../components/DatePickerFormInput';
 
 export default function AddPlaceScreen() {
     const [values, setValues] = useState({
         title: '',
         image_url: '',
         location: '',
-        date: '',
+        date: new Date(),
         description: '',
         category: 'City',
         rating: 0,
@@ -94,7 +95,13 @@ export default function AddPlaceScreen() {
                         <Text style={styles.locationButtonText}>🧭  Use my current location</Text>
                     </TouchableOpacity>
 
-                    <FormInput type="date" label="Date of visit" icon="📅" placeholder="DD.MM.YYYY" value={values.date} onChangeText={(text) => handleChange('date', text)} />
+                    <DatePickerFormInput
+                        label="Date of visit"
+                        icon="📅"
+                        placeholder="DD.MM.YYYY"
+                        value={values.date}
+                        onChangeText={(date) => handleChange('date', date)} 
+                    />
 
                     <FormInput
                         label="Description"

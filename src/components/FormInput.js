@@ -1,31 +1,20 @@
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Text, TextInput, View, Pressable } from 'react-native';
 
 import { colors } from '../constants/colors';
 
-export default function FormInput({ label, icon, type = 'default', ...inputProps }) {
+export default function FormInput({ label, icon, type = 'default', onAction, ...inputProps }) {
     return (
         <View style={styles.container}>
             <Text style={styles.label}>{label}</Text>
 
             <View style={[styles.inputWrapper, inputProps.multiline && styles.inputWrapperMultiline]}>
-                <Text style={[styles.icon, inputProps.multiline && styles.iconMultiline]}>{icon}</Text>
-                {type === 'date_test'
-                    ? <DateTimePicker
-                        testID="dateTimePicker"
-                        value={inputProps.value ? new Date(inputProps.value) : new Date()}
-                        mode="date"
-                        is24Hour={true}
-                        onValueChange={(event, selectedDate) => setDate(selectedDate)}
-                    />
-                    : <TextInput
-                        style={[styles.input, inputProps.multiline && styles.inputMultiline]}
-                        placeholderTextColor={colors.textMuted}
-                        keyboardType={type}
-                        {...inputProps}
-                    />
-                }
-
+                <Pressable onPress={onAction}><Text style={[styles.icon, inputProps.multiline && styles.iconMultiline]}>{icon}</Text></Pressable>
+                <TextInput
+                    style={[styles.input, inputProps.multiline && styles.inputMultiline]}
+                    placeholderTextColor={colors.textMuted}
+                    keyboardType={type}
+                    {...inputProps}
+                />
             </View>
         </View>
     );
