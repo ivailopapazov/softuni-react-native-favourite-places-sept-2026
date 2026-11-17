@@ -6,8 +6,10 @@ import {
     Text,
     TouchableOpacity,
     View,
+    Alert,
 } from 'react-native';
 import { getErrorMessage } from '../utils/error.utils';
+import * as Location from 'expo-location';
 
 import ScreenHeader from '../components/ScreenHeader';
 import FormInput from '../components/FormInput';
@@ -37,6 +39,25 @@ export default function AddPlaceScreen() {
         }));
     };
 
+    const useCurrentLocationHandler = async () => {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+
+        if (status !== 'granted') {
+            Alert.alert('Location permission not granted');
+            return;
+        }
+
+        const location = await Location.getCurrentPositionAsync({});
+        console.log('Current location:', location);
+
+        const reverseGeocode = await Location.reverseGeocodeAsync({
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+        });
+
+        handleChange('location', `${reverseGeocode[0].city}, ${reverseGeocode[0].country}`);
+    };
+
     const handleSave = async () => {
         // Implement save logic here, e.g., send data to API or update state
         console.log(values);
@@ -48,7 +69,7 @@ export default function AddPlaceScreen() {
             console.error('Failed to save place:', getErrorMessage(error));
         }
     };
-    
+
     return (
         <KeyboardAvoidingView
             style={styles.screen}
@@ -69,7 +90,7 @@ export default function AddPlaceScreen() {
                     <FormInput label="imageUrl" icon="🖼️" placeholder="Image URL" value={values.image_url} onChangeText={(text) => handleChange('image_url', text)} />
 
                     <FormInput label="Location" icon="📍" placeholder="City, Country" value={values.location} onChangeText={(text) => handleChange('location', text)} />
-                    <TouchableOpacity style={styles.locationButton} activeOpacity={0.7}>
+                    <TouchableOpacity style={styles.locationButton} activeOpacity={0.7} onPress={useCurrentLocationHandler}>
                         <Text style={styles.locationButtonText}>🧭  Use my current location</Text>
                     </TouchableOpacity>
 
