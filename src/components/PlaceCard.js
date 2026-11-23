@@ -3,9 +3,9 @@ import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 import RatingStars from './RatingStars';
 import { colors } from '../constants/colors';
 
-export default function PlaceCard({ place }) {
+export default function PlaceCard({ place, onPress }) {
     return (
-        <TouchableOpacity style={styles.card} activeOpacity={0.85}>
+        <TouchableOpacity style={styles.card} activeOpacity={0.85} onPress={onPress}>
             {/* Image placeholder - a real photo will be used later */}
             <View style={styles.image}>
                 {/* <Text style={styles.imageEmoji}>{place.emoji}</Text> */}

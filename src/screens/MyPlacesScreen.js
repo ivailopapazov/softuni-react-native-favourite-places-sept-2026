@@ -34,7 +34,12 @@ export default function MyPlacesScreen({
             <FlatList
                 data={myPlaces}
                 keyExtractor={(item) => item.id}
-                renderItem={({ item }) => <PlaceCard place={item} />}
+                renderItem={({ item }) => (
+                    <PlaceCard
+                        place={item}
+                        onPress={() => navigation.navigate('PlaceDetails', { placeId: item.id })}
+                    />
+                )}
                 contentContainerStyle={styles.listContent}
                 showsVerticalScrollIndicator={false}
                 ListHeaderComponent={

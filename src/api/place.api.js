@@ -6,6 +6,14 @@ export const getAll = async () => {
     return result.data;
 }
 
+export const getOne = async (placeId) => {
+    const result = await api.get("/places", {
+        params: { id: `eq.${placeId}` },
+    });
+
+    return result.data[0] ?? null;
+}
+
 export const create = async (place) => {
     const result = await api.post("/places", place)
 
