@@ -20,6 +20,14 @@ export const create = async (place) => {
     return result.data;
 }
 
+export const remove = async (placeId) => {
+    const result = await api.delete("/places", {
+        params: { id: `eq.${placeId}` },
+    });
+
+    return result.data;
+}
+
 export const saveImage = async (file, fileName) => {
     const bytes = await file.arrayBuffer();
 

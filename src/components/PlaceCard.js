@@ -1,32 +1,35 @@
 import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
+import Animated from 'react-native-reanimated';
 
 import RatingStars from './RatingStars';
 import { colors } from '../constants/colors';
 
-export default function PlaceCard({ place, onPress }) {
+export default function PlaceCard({ place, onPress, style }) {
     return (
-        <TouchableOpacity style={styles.card} activeOpacity={0.85} onPress={onPress}>
-            {/* Image placeholder - a real photo will be used later */}
-            <View style={styles.image}>
-                {/* <Text style={styles.imageEmoji}>{place.emoji}</Text> */}
-                <Image source={{ uri: place.image_url }} style={{ width: '100%', height: '100%' }} />
-                <View style={styles.categoryBadge}>
-                    <Text style={styles.categoryText}>{place.category}</Text>
-                </View>
-            </View>
-
-            <View style={styles.body}>
-                <View style={styles.titleRow}>
-                    <Text style={styles.title} numberOfLines={1}>{place.title}</Text>
-                    <RatingStars rating={place.rating} size={13} />
+        // <Animated.View style={style}>
+            <TouchableOpacity style={styles.card} activeOpacity={0.85} onPress={onPress}>
+                {/* Image placeholder - a real photo will be used later */}
+                <View style={styles.image}>
+                    {/* <Text style={styles.imageEmoji}>{place.emoji}</Text> */}
+                    <Image source={{ uri: place.image_url }} style={{ width: '100%', height: '100%' }} />
+                    <View style={styles.categoryBadge}>
+                        <Text style={styles.categoryText}>{place.category}</Text>
+                    </View>
                 </View>
 
-                <Text style={styles.location} numberOfLines={1}>📍 {place.location}</Text>
-                <Text style={styles.description} numberOfLines={2}>{place.description}</Text>
+                <View style={styles.body}>
+                    <View style={styles.titleRow}>
+                        <Text style={styles.title} numberOfLines={1}>{place.title}</Text>
+                        <RatingStars rating={place.rating} size={13} />
+                    </View>
 
-                <Text style={styles.date}>Visited on {place.date}</Text>
-            </View>
-        </TouchableOpacity>
+                    <Text style={styles.location} numberOfLines={1}>📍 {place.location}</Text>
+                    <Text style={styles.description} numberOfLines={2}>{place.description}</Text>
+
+                    <Text style={styles.date}>Visited on {place.date}</Text>
+                </View>
+            </TouchableOpacity>
+        // </Animated.View>
     );
 }
 

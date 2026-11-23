@@ -23,7 +23,7 @@ import { useState } from 'react';
 import { placeApi } from '../api';
 import DatePickerFormInput from '../components/DatePickerFormInput';
 
-export default function AddPlaceScreen() {
+export default function AddPlaceScreen({ navigation }) {
     const [values, setValues] = useState({
         title: '',
         image_url: null,
@@ -74,7 +74,10 @@ export default function AddPlaceScreen() {
                 ...values,
                 image_url: imageUrl,
             });
+
+
             console.log('Place saved successfully');
+            navigation.goBack();
         } catch (error) {
             console.error('Failed to save place:', getErrorMessage(error));
         }
@@ -83,7 +86,7 @@ export default function AddPlaceScreen() {
     return (
         <KeyboardAvoidingView
             style={styles.screen}
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
             <ScreenHeader title="Add New Place" />
 
@@ -107,7 +110,7 @@ export default function AddPlaceScreen() {
                         icon="📅"
                         placeholder="DD.MM.YYYY"
                         value={values.date}
-                        onChangeText={(date) => handleChange('date', date)} 
+                        onChangeText={(date) => handleChange('date', date)}
                     />
 
                     <FormInput

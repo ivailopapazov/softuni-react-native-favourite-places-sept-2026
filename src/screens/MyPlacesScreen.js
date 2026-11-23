@@ -1,32 +1,46 @@
-import { FlatList, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { FlatList, RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useEffect, useState } from 'react';
 
 import ScreenHeader from '../components/ScreenHeader';
-import PlaceCard from '../components/PlaceCard';
 import Chip from '../components/Chip';
 import { colors } from '../constants/colors';
 import { categories, places } from '../data/places';
 import { placeApi } from '../api';
+import SwipablePlaceCard from '../components/SwipablePlaceCard';
+import SwipeableCard from '../components/SwipeableCard';
 
 export default function MyPlacesScreen({
     navigation,
 }) {
+    const [refreshing, setRefreshing] = useState(false);
     const [myPlaces, setMyPlaces] = useState(places);
 
     useEffect(() => {
-        const fetchPlaces = async () => {
-            try {
-                const data = await placeApi.getAll();
-                setMyPlaces(data);
-            } catch (error) {
-                console.error('Failed to fetch places:', error);
-            }
-        };
-
-        fetchPlaces();
+        refreshHandler();
     }, []);
 
-    
+    const refreshHandler = async () => {
+        setRefreshing(true);
+        try {
+            const data = await placeApi.getAll();
+            setMyPlaces(data);
+        } catch (error) {
+            console.error('Failed to fetch places:', error);
+        } finally {
+            setRefreshing(false);
+        }
+    };
+
+    const deletePlaceHandler = async (placeId) => {
+        try {
+            await placeApi.remove(placeId);
+            setMyPlaces((prevPlaces) => prevPlaces.filter((place) => place.id !== placeId));
+        } catch (error) {
+            console.error('Failed to delete place:', error);
+        }
+    };
+
+
     return (
         <View style={styles.screen}>
             <ScreenHeader title="My Places" subtitle={`${myPlaces.length} saved places`} rightIcon="⇅" />
@@ -34,10 +48,12 @@ export default function MyPlacesScreen({
             <FlatList
                 data={myPlaces}
                 keyExtractor={(item) => item.id}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refreshHandler} />}
                 renderItem={({ item }) => (
-                    <PlaceCard
+                    <SwipeableCard
                         place={item}
                         onPress={() => navigation.navigate('PlaceDetails', { placeId: item.id })}
+                        onDelete={() => deletePlaceHandler(item.id)}
                     />
                 )}
                 contentContainerStyle={styles.listContent}
