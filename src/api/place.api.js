@@ -20,6 +20,22 @@ export const create = async (place) => {
     return result.data;
 }
 
+export const update = async (placeId, place) => {
+    const result = await api.put("/places", place, {
+        params: { id: `eq.${placeId}` },
+    });
+
+    return result.data;
+}
+
+export const getById = async (placeId) => {
+    const result = await api.get("/places", {
+        params: { id: `eq.${placeId}` },
+    });
+
+    return result.data[0] ?? null;
+}
+
 export const remove = async (placeId) => {
     const result = await api.delete("/places", {
         params: { id: `eq.${placeId}` },

@@ -1,5 +1,5 @@
 import { FlatList, RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import ScreenHeader from '../components/ScreenHeader';
 import Chip from '../components/Chip';
@@ -8,6 +8,7 @@ import { categories, places } from '../data/places';
 import { placeApi } from '../api';
 import SwipablePlaceCard from '../components/SwipablePlaceCard';
 import SwipeableCard from '../components/SwipeableCard';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function MyPlacesScreen({
     navigation,
@@ -18,6 +19,10 @@ export default function MyPlacesScreen({
     useEffect(() => {
         refreshHandler();
     }, []);
+
+    useFocusEffect(useCallback(() => {
+        refreshHandler();
+    }, []))
 
     const refreshHandler = async () => {
         setRefreshing(true);
@@ -40,7 +45,6 @@ export default function MyPlacesScreen({
         }
     };
 
-
     return (
         <View style={styles.screen}>
             <ScreenHeader title="My Places" subtitle={`${myPlaces.length} saved places`} rightIcon="⇅" />
@@ -54,6 +58,7 @@ export default function MyPlacesScreen({
                         place={item}
                         onPress={() => navigation.navigate('PlaceDetails', { placeId: item.id })}
                         onDelete={() => deletePlaceHandler(item.id)}
+                        onEdit={() => navigation.navigate('AddPlace', { placeId: item.id, isEdit: true })}
                     />
                 )}
                 contentContainerStyle={styles.listContent}

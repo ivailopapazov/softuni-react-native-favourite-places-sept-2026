@@ -19,11 +19,15 @@ import Chip from '../components/Chip';
 import PhotoPicker from '../components/PhotoPicker';
 import { colors } from '../constants/colors';
 import { categories } from '../data/places';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { placeApi } from '../api';
+import { isLocalFile } from '../utils/file.utils';
 import DatePickerFormInput from '../components/DatePickerFormInput';
 
-export default function AddPlaceScreen({ navigation }) {
+export default function AddPlaceScreen({ navigation, route }) {
+    const isEdit = !!route?.params?.isEdit;
+    const placeId = route?.params?.placeId;
+
     const [values, setValues] = useState({
         title: '',
         image_url: null,
@@ -33,6 +37,24 @@ export default function AddPlaceScreen({ navigation }) {
         category: 'City',
         rating: 0,
     });
+
+    useEffect(() => {
+        if (isEdit && placeId) {
+            const fetchPlace = async () => {
+                try {
+                    const place = await placeApi.getById(placeId);
+                    setValues({
+                        ...place,
+                        date: new Date(place.date),
+                    });
+                } catch (error) {
+                    console.error('Failed to fetch place:', getErrorMessage(error));
+                }
+            };
+            fetchPlace();
+        }
+
+    }, [isEdit, placeId])
 
     const handleChange = (name, value) => {
         setValues((prevValues) => ({
@@ -63,18 +85,25 @@ export default function AddPlaceScreen({ navigation }) {
     const handleSave = async () => {
         try {
             let imageUrl = values.image_url;
-            if (imageUrl) {
+
+            if (isLocalFile(imageUrl)) {
                 const file = new File(imageUrl);
                 const fileName = `${values.title}-${Date.now()}.jpg`;
 
                 imageUrl = await placeApi.saveImage(file, fileName);
             }
 
-            await placeApi.create({
-                ...values,
-                image_url: imageUrl,
-            });
-
+            if (isEdit) {
+                await placeApi.update(placeId, {
+                    ...values,
+                    image_url: imageUrl,
+                });
+            } else {
+                await placeApi.create({
+                    ...values,
+                    image_url: imageUrl,
+                });
+            }
 
             console.log('Place saved successfully');
             navigation.goBack();
@@ -88,7 +117,7 @@ export default function AddPlaceScreen({ navigation }) {
             style={styles.screen}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
-            <ScreenHeader title="Add New Place" />
+            <ScreenHeader title={isEdit ? "Edit Place" : "Add New Place"} />
 
             <ScrollView
                 contentContainerStyle={styles.content}
@@ -145,7 +174,7 @@ export default function AddPlaceScreen({ navigation }) {
                         ))}
                     </View>
 
-                    <PrimaryButton title="Save Place" onPress={handleSave} />
+                    <PrimaryButton title={isEdit ? "Update Place" : "Create Place"} onPress={handleSave} />
 
                     <TouchableOpacity style={styles.cancelButton} activeOpacity={0.7}>
                         <Text style={styles.cancelText}>Cancel</Text>
