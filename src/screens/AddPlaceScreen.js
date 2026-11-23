@@ -23,16 +23,20 @@ import { useState } from 'react';
 import { placeApi } from '../api';
 import DatePickerFormInput from '../components/DatePickerFormInput';
 
-export default function AddPlaceScreen() {
-    const [values, setValues] = useState({
-        title: '',
-        image_url: null,
-        location: '',
-        date: new Date(),
-        description: '',
-        category: 'City',
-        rating: 0,
-    });
+export default function AddPlaceScreen({ navigation, route }) {
+    // When navigated from "My Places" with a place, the screen works in edit mode.
+    const editedPlace = route.params?.place;
+    const isEditMode = !!editedPlace;
+
+    const [values, setValues] = useState(() => ({
+        title: editedPlace?.title ?? '',
+        image_url: editedPlace?.image_url ?? null,
+        location: editedPlace?.location ?? '',
+        date: editedPlace?.date ? new Date(editedPlace.date) : new Date(),
+        description: editedPlace?.description ?? '',
+        category: editedPlace?.category ?? 'City',
+        rating: editedPlace?.rating ?? 0,
+    }));
 
     const handleChange = (name, value) => {
         setValues((prevValues) => ({
@@ -63,18 +67,27 @@ export default function AddPlaceScreen() {
     const handleSave = async () => {
         try {
             let imageUrl = values.image_url;
-            if (imageUrl) {
+            // Upload only newly picked local images - already uploaded ones are remote URLs.
+            if (imageUrl && !imageUrl.startsWith('http')) {
                 const file = new File(imageUrl);
                 const fileName = `${values.title}-${Date.now()}.jpg`;
 
                 imageUrl = await placeApi.saveImage(file, fileName);
             }
 
-            await placeApi.create({
+            const placeData = {
                 ...values,
                 image_url: imageUrl,
-            });
+            };
+
+            if (isEditMode) {
+                await placeApi.update(editedPlace.id, placeData);
+            } else {
+                await placeApi.create(placeData);
+            }
+
             console.log('Place saved successfully');
+            navigation.goBack();
         } catch (error) {
             console.error('Failed to save place:', getErrorMessage(error));
         }
@@ -85,7 +98,7 @@ export default function AddPlaceScreen() {
             style={styles.screen}
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
-            <ScreenHeader title="Add New Place" />
+            <ScreenHeader title={isEditMode ? 'Edit Place' : 'Add New Place'} />
 
             <ScrollView
                 contentContainerStyle={styles.content}
@@ -142,9 +155,9 @@ export default function AddPlaceScreen() {
                         ))}
                     </View>
 
-                    <PrimaryButton title="Save Place" onPress={handleSave} />
+                    <PrimaryButton title={isEditMode ? 'Save Changes' : 'Save Place'} onPress={handleSave} />
 
-                    <TouchableOpacity style={styles.cancelButton} activeOpacity={0.7}>
+                    <TouchableOpacity style={styles.cancelButton} activeOpacity={0.7} onPress={() => navigation.goBack()}>
                         <Text style={styles.cancelText}>Cancel</Text>
                     </TouchableOpacity>
                 </View>

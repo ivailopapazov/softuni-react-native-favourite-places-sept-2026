@@ -1,11 +1,11 @@
-import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
+import { StyleSheet, Text, View, Image } from 'react-native';
 
 import RatingStars from './RatingStars';
 import { colors } from '../constants/colors';
 
-export default function PlaceCard({ place }) {
+export default function PlaceCard({ place, style }) {
     return (
-        <TouchableOpacity style={styles.card} activeOpacity={0.85}>
+        <View style={[styles.card, style]}>
             {/* Image placeholder - a real photo will be used later */}
             <View style={styles.image}>
                 {/* <Text style={styles.imageEmoji}>{place.emoji}</Text> */}
@@ -26,7 +26,7 @@ export default function PlaceCard({ place }) {
 
                 <Text style={styles.date}>Visited on {place.date}</Text>
             </View>
-        </TouchableOpacity>
+        </View>
     );
 }
 

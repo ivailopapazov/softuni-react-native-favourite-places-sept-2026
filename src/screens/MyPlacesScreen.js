@@ -1,40 +1,98 @@
-import { FlatList, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { useEffect, useState } from 'react';
+import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import Animated, { FadeInDown, FadeOutLeft, LinearTransition } from 'react-native-reanimated';
 
 import ScreenHeader from '../components/ScreenHeader';
-import PlaceCard from '../components/PlaceCard';
+import SwipeablePlaceCard from '../components/SwipeablePlaceCard';
 import Chip from '../components/Chip';
 import { colors } from '../constants/colors';
 import { categories, places } from '../data/places';
 import { placeApi } from '../api';
+import { getErrorMessage } from '../utils/error.utils';
 
 export default function MyPlacesScreen({
     navigation,
 }) {
     const [myPlaces, setMyPlaces] = useState(places);
 
-    useEffect(() => {
-        const fetchPlaces = async () => {
-            try {
-                const data = await placeApi.getAll();
-                setMyPlaces(data);
-            } catch (error) {
-                console.error('Failed to fetch places:', error);
-            }
-        };
-
-        fetchPlaces();
+    const fetchPlaces = useCallback(async () => {
+        try {
+            const data = await placeApi.getAll();
+            setMyPlaces(data);
+        } catch (error) {
+            console.error('Failed to fetch places:', error);
+        }
     }, []);
 
-    
+    // Refetch every time the screen gets focus (e.g. after coming back from Edit).
+    useEffect(() => {
+        return navigation.addListener('focus', fetchPlaces);
+    }, [navigation, fetchPlaces]);
+
+    const editHandler = (place) => {
+        navigation.navigate('AddPlace', { place });
+    };
+
+    const deleteHandler = (place, cancel) => {
+        Alert.alert('Delete place', `Are you sure you want to delete "${place.title}"?`, [
+            { text: 'Cancel', style: 'cancel', onPress: cancel },
+            {
+                text: 'Delete',
+                style: 'destructive',
+                onPress: async () => {
+                    // Optimistic update - the card animates out right away.
+                    const previous = myPlaces;
+                    setMyPlaces((current) => current.filter((p) => p.id !== place.id));
+
+                    try {
+                        await placeApi.remove(place.id);
+                    } catch (error) {
+                        setMyPlaces(previous);
+                        cancel();
+                        Alert.alert('Failed to delete place', getErrorMessage(error));
+                    }
+                },
+            },
+        ], { cancelable: true, onDismiss: cancel });
+    };
+
+    const toggleFavouriteHandler = async (place) => {
+        const isFavourite = !place.is_favourite;
+        const setFavourite = (value) => setMyPlaces((current) =>
+            current.map((p) => (p.id === place.id ? { ...p, is_favourite: value } : p))
+        );
+
+        setFavourite(isFavourite);
+
+        try {
+            await placeApi.toggleFavourite(place.id, isFavourite);
+        } catch (error) {
+            setFavourite(!isFavourite);
+            Alert.alert('Failed to update favourites', getErrorMessage(error));
+        }
+    };
+
     return (
         <View style={styles.screen}>
             <ScreenHeader title="My Places" subtitle={`${myPlaces.length} saved places`} rightIcon="⇅" />
 
-            <FlatList
+            <Animated.FlatList
                 data={myPlaces}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => <PlaceCard place={item} />}
+                keyExtractor={(item) => String(item.id)}
+                itemLayoutAnimation={LinearTransition.springify().damping(18)}
+                renderItem={({ item, index }) => (
+                    <Animated.View
+                        entering={FadeInDown.delay(Math.min(index, 6) * 60).springify().damping(18)}
+                        exiting={FadeOutLeft.duration(250)}
+                    >
+                        <SwipeablePlaceCard
+                            place={item}
+                            onEdit={editHandler}
+                            onDelete={deleteHandler}
+                            onToggleFavourite={toggleFavouriteHandler}
+                        />
+                    </Animated.View>
+                )}
                 contentContainerStyle={styles.listContent}
                 showsVerticalScrollIndicator={false}
                 ListHeaderComponent={
@@ -59,6 +117,7 @@ export default function MyPlacesScreen({
                                 <Chip key={category} label={category} active={index === 0} />
                             ))}
                         </ScrollView>
+                        <Text style={styles.hint}>Swipe → edit · Swipe ← delete · Double tap ❤️</Text>
                     </>
                 }
             />
@@ -101,9 +160,15 @@ const styles = StyleSheet.create({
     },
     chips: {
         marginTop: 14,
-        marginBottom: 18,
+        marginBottom: 12,
         marginHorizontal: -20,
         paddingHorizontal: 20,
+    },
+    hint: {
+        fontSize: 12,
+        color: colors.textMuted,
+        textAlign: 'center',
+        marginBottom: 12,
     },
     fab: {
         position: 'absolute',

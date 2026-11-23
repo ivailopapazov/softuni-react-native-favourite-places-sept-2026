@@ -1,12 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import RootNavigator from './navigation/RootNavigator';
 import AuthProvider from './contexts/auth-context/AuthProvider';
 
 export default function App() {
     return (
-        <>
+        <GestureHandlerRootView style={{ flex: 1 }}>
             <StatusBar style="light" />
 
             <NavigationContainer>
@@ -14,6 +15,6 @@ export default function App() {
                     <RootNavigator />
                 </AuthProvider>
             </NavigationContainer>
-        </>
+        </GestureHandlerRootView>
     );
 }
