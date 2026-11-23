@@ -1,30 +1,43 @@
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import PlaceCard from './PlaceCard';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
+import Animated, { useAnimatedStyle, interpolate, Extrapolation } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 
 import { colors } from '../constants/colors';
 
-function SwipeAction({ icon, label, color, onPress }) {
+function SwipeAction({ icon, label, color, onPress, progress }) {
+    const animatedStyle = useAnimatedStyle(() => ({
+        transform: [{ scale: progress.value }],
+        // opacity: interpolate(
+        //     progress.value,
+        //     [0, 1],
+        //     [0, 1],
+        //     Extrapolation.CLAMP
+        // ),
+    }));
+
     return (
-        <TouchableOpacity
-            style={[styles.action, { backgroundColor: color }]}
-            activeOpacity={0.8}
-            onPress={onPress}
+        <Animated.View
+            style={[styles.action, { backgroundColor: color }, animatedStyle]}
         >
-            <View style={styles.iconCircle}>
-                <Ionicons name={icon} size={20} color={colors.white} />
-            </View>
-            <Text style={styles.actionLabel}>{label}</Text>
-        </TouchableOpacity>
+            <Pressable
+                onPress={onPress}
+            >
+                <View style={styles.iconCircle}>
+                    <Ionicons name={icon} size={20} color={colors.white} />
+                </View>
+                <Text style={styles.actionLabel}>{label}</Text>
+            </Pressable>
+        </Animated.View>
     );
 }
 
 export default function SwipeableCard({ onEdit, onDelete, ...props }) {
-    const renderRightActions = () => (
+    const renderRightActions = (progress) => (
         <View style={styles.actions}>
-            <SwipeAction icon="create-outline" label="Edit" color={colors.primary} onPress={onEdit} />
-            <SwipeAction icon="trash-outline" label="Delete" color={colors.danger} onPress={onDelete} />
+            <SwipeAction icon="create-outline" label="Edit" progress={progress} color={colors.primary} onPress={onEdit} />
+            <SwipeAction icon="trash-outline" label="Delete" progress={progress} color={colors.danger} onPress={onDelete} />
         </View>
     );
 

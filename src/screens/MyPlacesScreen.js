@@ -1,14 +1,16 @@
-import { FlatList, RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useCallback, useEffect, useState } from 'react';
+import { RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+import { FlatList } from 'react-native-gesture-handler';
+
+import { placeApi } from '../api';
+import { categories, places } from '../data/places';
+import { colors } from '../constants/colors';
 
 import ScreenHeader from '../components/ScreenHeader';
 import Chip from '../components/Chip';
-import { colors } from '../constants/colors';
-import { categories, places } from '../data/places';
-import { placeApi } from '../api';
 import SwipablePlaceCard from '../components/SwipablePlaceCard';
 import SwipeableCard from '../components/SwipeableCard';
-import { useFocusEffect } from '@react-navigation/native';
 
 export default function MyPlacesScreen({
     navigation,
